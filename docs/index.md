@@ -22,7 +22,7 @@ It is designed for university students in Finland who need to set up their envir
 
     CSC resources are powerful but require careful usage. Always start small before running heavy jobs.
 
-    If you are new to Linux or Slurm, review the **Linux basics for CSC** cheat sheet before proceeding.
+    If you are new to Linux or Slurm, review the **Linux basics for CSC** or the **CSC Quick reference (pd)** cheat sheet before proceeding. The can be found in [CSC Tutorials](https://docs.csc.fi/support/tutorials/).
 
 
 

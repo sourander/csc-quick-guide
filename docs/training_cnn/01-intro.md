@@ -1,6 +1,6 @@
 # TODO this is coming up
 
-*This section will be updated with examples in `examples/01_cnn/`.*
+*This section will be updated with examples*
 
 ## Resources
 

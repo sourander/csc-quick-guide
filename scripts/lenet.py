@@ -46,7 +46,8 @@ from torchmetrics.classification import MulticlassAccuracy
 LEARNING_RATE = 0.01
 EPOCHS = 20
 BATCH_SIZE = 128
-NUM_CPU = os.cpu_count()
+NUM_CPU = int(os.environ.get("SLURM_CPUS_PER_TASK", os.cpu_count() or 1))
+print("Using CPU cores:", NUM_CPU)
 
 print('torch.__version__:', torch.__version__)
 assert torch.cuda.is_available(), "CUDA is not available. Training on CPU is for dimwits. Exiting."
@@ -233,8 +234,8 @@ def train_epoch(model, train_loader, criterion, optimizer, metric, device):
         # Update metric with predictions
         metric.update(outputs, labels)
 
-        # Print batch loss every 50 batches
-        if batch_idx % 50 == 0:
+        # Print batch loss every 100 batches
+        if batch_idx % 100 == 0:
             print(f"Batch {batch_idx}/{len(train_loader)} - Loss: {loss.item():.4f}")
 
     avg_loss = total_loss / len(train_loader)
@@ -279,7 +280,7 @@ for epoch in range(EPOCHS):
     # Print progress every epoch since
     # the model is expected to find a proper solution fairly quickly.
     print(f"Epoch [{epoch+1}/{EPOCHS}] - "
-          f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
+          f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}", flush=True)
 
 trained_model = model
 print("[INFO] training complete!")

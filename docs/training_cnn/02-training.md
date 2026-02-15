@@ -2,7 +2,7 @@
 
 ## LeNet-5 on MNIST
 
-This practical example is based on the [LeNet-5 architecture](https://en.wikipedia.org/wiki/LeNet) and the [MNIST dataset](http://yann.lecun.com/exdb/mnist/). Note that **we do not use** the torchvision's `ImageFolder` dataset class and we **do not** move any files from local PC to Puhti like shown in the [Preparing Data for Training](training_cnn/01-intro.md) section. Why? To make sure that the example script doesn't show 99 % correct answer to University course project. You need to implement that portion yourself. :nerd:
+This practical example is based on the [LeNet-5 architecture](https://en.wikipedia.org/wiki/LeNet) and the [MNIST dataset](https://en.wikipedia.org/wiki/MNIST_database). Note that **we do not use** the torchvision's `ImageFolder` dataset class and we **do not** move any files from local PC to Puhti like shown in the [Preparing Data for Training](training_cnn/01-intro.md) section. Why? To make sure that the example script doesn't show 99 % correct answer to University course project. You need to implement that portion yourself. :nerd:
 
 ### Accessing the example files
 

@@ -81,9 +81,19 @@ With this configuration, you can simply connect using:
 ssh puhti
 ```
 
+??? tip "Windows Users (PowerShell / WSL)"
+    The steps above work perfectly if you are using:
+
+    * **WSL (Windows Subsystem for Linux)**: Recommended for Windows users as it mimics Linux usage.
+    * **PowerShell**: Recent versions of Windows 10/11 come with OpenSSH client installed by default.
+    * **Git Bash**: Comes with Git for Windows.
+
+    If you prefer a GUI, you can use **VS Code with the Remote - SSH extension**, which uses this same `~/.ssh/config` file under the hood.
+
 ![](../images/09_puhti_SSH_MOTD.png)
 
 **Fig:** A successful login displays the Message of the Day (MOTD) with system status and usage tips.
+
 
 
 ## Puhti Essentials

@@ -45,10 +45,18 @@ You will typically receive:
 * 10,000 GPU billing units
 * 30,000 Storage billing units
 
-These are virtual units. No actual costs are generated for you personally.
+!!! info "Do I have to pay?"
+
+    **No.** These are virtual accounting units used to ensure fair usage of the shared resources. No actual costs are generated for you personally, and you will not receive an invoice. However, once your project runs out of billing units, you will not be able to run more jobs until you apply for more.
 
 ## Create Project
 
 **Read the terms and conditions, confirm your acceptance, and click *Create project*.**
 
 Once accepted, the Project is created.
+
+!!! tip "Where to find my Project Number?"
+
+    After creation, your project will have a number like `project_2001234`. You can always find this number by logging into [MyCSC](https://my.csc.fi). You will need this number frequently (e.g., for `sbatch --account=project_...`), so keep it handy!
+
+

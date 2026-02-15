@@ -31,6 +31,21 @@ scp -r . puhti:$PROJECTPATH
 
     If your code is in GitHub, you can also clone the repository directly on Puhti to avoid unnecessary copying. Then simply `git pull` to update your code after making changes locally.
 
-!!! warning
+!!! warning "Large Files and Datasets"
 
-    Please do not place large files into Github. Use e.g. Hugging Face or copy them using `scp` once.
+    **Do NOT place large files (datasets, model checkpoints >100MB) into GitHub.**
+    Use specific model hubs like Hugging Face, or copy the files directly using `scp` / `rsync`.
+
+## Using Rsync (Recommended for larger transfers)
+
+If you have a large folder structure or unstable connection, `rsync` is superior to `scp`. It only transfers files that have changed (delta transfer) and can resume interrupted transfers.
+
+```bash
+# Transfer only new/changed files
+rsync -avzP . puhti:$PROJECTPATH
+```
+
+* `-a`: Archive mode (permissions, timestamps, recursive)
+* `-v`: Verbose (show progress)
+* `-z`: Compress during transfer
+* `-P`: Show progress bar and allow resume

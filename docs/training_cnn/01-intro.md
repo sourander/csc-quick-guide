@@ -1,22 +1,41 @@
-# Preparing Data
+# Preparing Data for Training
 
-Even though the `home`, `project`, and `scratch` directories feel like they are typical HDD's, they are actually networked storage called [Lustre](https://docs.csc.fi/computing/lustre/). This kind of networked drives tend to perform poorly when accessing many small files, which is the case with datasets that follow the Torchvision [ImageFolder](https://docs.pytorch.org/vision/main/generated/torchvision.datasets.ImageFolder.html) structure. There are multiple ways to mitigate this issue, but a simple and effective way with small-ish datasets is:
+Now that you have verified your access and GPU capabilities, the next step is to prepare your data for efficient training. In the [Training CNN](training_cnn/01-intro.md) section, we will use a torchvision MNIST downloader. This section explains how to handle datasets that consist of many small files, which is a common scenario in deep learning. With MNIST, this is handled for you, but with custom datasets (read: the one in your assignment), you will need to do this yourself. This guide will prepare you for that.
 
-1. Zip the dataset on your local machine.
-2. Upload the zip file to your project directory on CSC.
-3. In the `squeue` slurm script, unzip the dataset to the `$LOCAL_SCRATCH` directory, which is a local SSD drive on the compute node.
+!!! abstract "Why does this matter?"
+    Deep Learning training often involves reading thousands of small image files repeatedly. On a supercomputer with a shared filesystem, doing this inefficiently can make your training very slow—or even crash the file system for everyone else!
 
-Note that the `$LOCAL_SCRATCH` directory is not shared between nodes and you cannot access it from the login node beforehands. Why? Because you have no idea which compute node your job will run on. Also, the data will NOT be persistent. The unzipping will be done every time you run the job.
+## The `LOCAL_SCRATCH` Advantage
 
-For benchmark on how much faster the local scratch is compared to the project directory, see CSC's [Which directory should I use to analyze many small files?](https://docs.csc.fi/support/faq/local_scratch_for_data_processing/).
+Even though the `home`, `project`, and `scratch` directories feel like typical hard drives, they are actually networked storage called [Lustre](https://docs.csc.fi/computing/lustre/). This kind of networked storage tends to perform poorly when accessing many small files randomly, which is exactly what happens when training a CNN with a dataset like ImageNet or CIFAR.
 
-!!! note
+To solve this, Puhti compute nodes have a fast, temporary local SSD drive called `LOCAL_SCRATCH`.
 
-    In order to be able to use the `$LOCAL_SCRATCH` variable, you need to request the `nvme` resource in your slurm script. For example: `#SBATCH --gres=gpu:v100:1,nvme:32G`.
+**The Strategy:**
+1. **Compress:** Zip your dataset into a single file on your local machine.
+2. **Transfer:** Upload only that single zip file to your project directory on CSC.
+3. **Unzip on Node:** In your `sbatch` job script, unzip the dataset directly to `$LOCAL_SCRATCH` at the *start* of the job.
+
+This ensures data is read from the ultra-fast local SSD during training.
+
+!!! warning "Temporary Storage"
+
+    The `$LOCAL_SCRATCH` directory is **temporary** and **node-specific**.
+    
+    * It is wiped clean as soon as your job finishes.
+    * You cannot access it from the login node.
+    * You must unzip your data there *every time* you run a job.
+
+For benchmarks, see CSC's [Which directory should I use to analyze many small files?](https://docs.csc.fi/support/faq/local_scratch_for_data_processing/).
+
+!!! tip "Requesting NVMe"
+
+    To use `$LOCAL_SCRATCH`, you must request NVMe space in your Slurm script, e.g., `#SBATCH --gres=gpu:v100:1,nvme:32`. This requests 32 GB of local SSD space.
 
 ## Practical Example
 
-Let's assume we have a directory where running `tree` gives us the following output:
+Let's assume we have a directory structure locally:
+
 
 ```
 images/

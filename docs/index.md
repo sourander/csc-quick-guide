@@ -14,9 +14,13 @@ It is designed for university students in Finland who need to set up their envir
 
 1.  [**Setup**](setup/01-project.md): How to get a CSC account, create a project, and connect to Puhti via SSH.
 2.  [**Testing GPU**](testing_gpu/01-moving-files.md): Moving your files to the server and running a simple GPU test job.
-3.  [**Training CNN**](training_cnn/01-intro.md): (Upcoming) Detailed guide on training a CNN with a custom dataset.
+3.  [**Training CNN**](training_cnn/01-intro.md): Detailed guide on training a CNN with a custom dataset.
 
 ---
+
+!!! abstract "Scope of this guide"
+
+    This guide focuses specifically on analyzing data using **PyTorch** on the **Puhti** supercomputer via **Slurm** batch jobs. While CSC offers other tools (like Notebooks or user interfaces), the command-line approach is the most flexible and powerful skill for a data scientist to learn.
 
 !!! tip
 

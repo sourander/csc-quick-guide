@@ -2,11 +2,11 @@
 
 ## LeNet-5 on MNIST
 
-This practical example is based on the [LeNet-5 architecture](https://en.wikipedia.org/wiki/LeNet) and the [MNIST dataset](http://yann.lecun.com/exdb/mnist/). Note that **we do not use** the torchvision's `ImageFolder` dataset class. This is so that the example script doesn't show 99 % correct answer to University course project. You need to implement that portion yourself.
+This practical example is based on the [LeNet-5 architecture](https://en.wikipedia.org/wiki/LeNet) and the [MNIST dataset](http://yann.lecun.com/exdb/mnist/). Note that **we do not use** the torchvision's `ImageFolder` dataset class and we **do not** move any files from local PC to Puhti like shown in the [Preparing Data for Training](training_cnn/01-intro.md) section. Why? To make sure that the example script doesn't show 99 % correct answer to University course project. You need to implement that portion yourself. :nerd:
 
-### Accessing the files
+### Accessing the example files
 
-The example files are located in the `scripts` directory of this repository. Either clone the repository or copy from GitHub GUI. Files in question are:
+The example files are located in the `scripts` directory of this repository. You can find a link to the Github repository in the top right corner of the page. Look for :simple-github: icon. Either clone the repository or download the specific files you need. The example files are:
 
 ```
 scripts/
@@ -31,7 +31,7 @@ scp ./lenet.* puhti:/$PROJECTPATH/lenet/
 
 ### Using LOCAL_SCRATCH in Python
 
-Whether you use MNIST downloader or `ImageFolder`, the usage is pretty much the same. You need to read the `LOCAL_SCRATCH` environment variable in your Python code and use it as the base path for your data. This can be seen in the `lenet.py` script, but is below for quick reference:
+Whether you use MNIST downloader or `ImageFolder`, how you use the `LOCAL_SCRATCH` environment variable is the same. The `os` module in Python can be used to read environment variables. This is implemented in the `lenet.py` script, but is also demonstrated below for quick reference:
 
 ```python title="lenet.py"
 import os
@@ -49,6 +49,8 @@ trainset = datasets.MNIST(
 
 ### Running the job
 
+This should start to feel familiar by now. Instead of running anything in the login node, you add the script to the chosen partition's queue. The choices are made in the Slurm script, which is `lenet.sh` in this case.
+
 ```bash title="On Puhti"
 # ssh puhti 
 cd $PROJECTPATH/lenet
@@ -56,12 +58,12 @@ cd $PROJECTPATH/lenet
 sbatch lenet.sh
 ```
 
-The `lenet.sh` script can be found in the repo, as mentioned above, but it is also shown below for quick reference. You will need to change the `--account` flag to match your project ID.
+The `lenet.sh` script can be found in the repo, as mentioned above, but it's contents are shown below for quick reference. You will need to change the `--account` flag to match your project ID.
 
 ```bash title="lenet.sh"
 #!/bin/bash
 #SBATCH --job-name=lenet_mnist_v001
-#SBATCH --account=project_2017744
+#SBATCH --account=project_CHANGE_ME
 #SBATCH --partition=gputest
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
@@ -79,9 +81,35 @@ module load pytorch
 srun python lenet.py
 ```
 
-## How to Handle Python Packages
+### Using the Model
 
-### What packages are in the module?
+The `lenet.py` script trains a simple LeNet-5 model on the MNIST dataset and stores it to `models/MNIST_make_your_own_versioning_stragegy.pth`. Now you can either:
+
+1. Implement an inference script and run it on Puhti, or
+2. Download the model to your local machine and run inference there.
+
+The option 2 is easy and, assuming that you own a GPU-enabled machine (like Nvidia RTX 3060 or similar), typical assignment-scale models should run fine on your local machine. Training requires more resources than inference. To copy the model to your local machine, you can use `scp` again:
+
+```bash title="On your local machine"
+# A variable is created here to keep code lines shorter
+MODELNAME=MNIST_make_your_own_versioning_stragegy.pth
+MODELPATH=$PROJECTPATH/lenet/models/$MODELNAME
+
+# Copy the model to local machine
+scp puhti:$MODELPATH ./models/
+```
+
+!!! info "Why the funky file name?"
+
+    The file name is intentionally verbose to encourage you to implement your own versioning strategy for your models. You **need** to know what was the learning rate, batch size, and other hyperparameters for the model you are using. This is especially important when you start to experiment with different architectures and hyperparameters. You can use tools like MLflow or Weights & Biases to track your experiments, or simply maintain a well-structured directory and file naming convention plus potentially an Excel sheet to track your experiments.
+
+![Stupid meme concluding the section](https://i.imgflip.com/ak710f.jpg)
+
+## Extra Tips and Resources
+
+### How to Handle Python Packages
+
+#### What packages are in the module?
 
 The `pytorch` module on Puhti contains **a lot** more than just PyTorch. It also contains many common dependencies, such as `torchvision`, `torchaudio`, and `torchtext`. You can check the exact content of the module by running:
 
@@ -90,7 +118,7 @@ module load pytorch
 pip list
 ```
 
-### Installing a new package
+#### Installing a new package
 
 In case you need additional packages, you need some extra steps. A recommended method here is a virtual environment. Check the [Using Python on CSC supercomputers](https://docs.csc.fi/support/tutorials/python-usage-guide/#using-venv). How will you know if you need additional packages? You will find out when you run the script and it throws an error about a missing package. Read the `slurm-[jobid].out` file to see the error message.
 
@@ -139,13 +167,13 @@ srun $PYTHON lenet.py
 
 
 
-## How to Monitor GPU Usage
+### How to Monitor GPU Usage
 
-### After the Job
+#### After the Job
 
 Use `seff <jobid>` to check CPU and GPU usage stats after the job completes.
 
-### During the Job
+#### During the Job
 
 A quick and dirty way to monitor GPU usage during a job is to run `nvidia-smi` in a loop on the compute node. You can do this by adding the following line to your slurm script:
 
@@ -188,7 +216,7 @@ Sun Feb 15 10:55:22 2026
 
 
 
-## Resources
+### Further Reading
 
 Note that the guide below will most likely 100% match your use case. You will need to adapt the code and commands to your needs. The guide is meant to be a starting point and a reference for you to build on top of. Check the CSC documentation for more details and examples:
 

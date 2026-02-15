@@ -3,7 +3,6 @@
 ## Fetch Test Script
 
 To verify GPU access, we will use an example script from CSC's repository. This script, `pytorch-gpu-test.py`, verifies that PyTorch can see and use the GPU.
-
 ```bash
 ssh puhti
 cd $SCRATCHPATH
@@ -14,15 +13,31 @@ curl $URL -O
 
 ## Create Slurm Script
 
-Create a file called `first_slurm.sh` with the content that is shown is the image below. You can find a similar script template at [gh:CSCfi/pytorch-ddp-examples](https://github.com/CSCfi/pytorch-ddp-examples/blob/master/run-ddp-gpu1-mlflow.sh).
+Create a file called `first_slurm.sh` with the content below. You can use `nano first_slurm.sh` or `vim first_slurm.sh` on Puhti to create the file.
 
-![](../images/02_first_slurm_sh.png)
+```bash title="first_slurm.sh"
+#!/bin/bash
+#SBATCH --job-name=first_test
+#SBATCH --account=project_CHANGE_ME
+#SBATCH --partition=gputest
+#SBATCH --ntasks=1
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=64G
+#SBATCH --time=00:15:00
+#SBATCH --gres=gpu:v100:1
 
-**Fig:** The contents of the `first_slurm.sh` file.
+module load pytorch
+srun python pytorch-gpu-test.py
+```
 
 ### Understanding Slurm Flags
 
-Here is a breakdown of the `#SBATCH` flags you may encounter. These tell the scheduler what resources you need. Please, do not simply copycat the dummy values from the screenshot above. Think, and use the values that are appropriate for your specific job and project.
+Here is a breakdown of the `#SBATCH` flags you may encounter. These tell the scheduler what resources you need.
+
+!!! warning "Do not blindly copy values!"
+
+    Think, and use the values that are appropriate for your specific job and project. Always check your project number.
 
 | Flag              | Example Value     | Description                                                        |
 | :---------------- | :---------------- | :----------------------------------------------------------------- |

@@ -13,10 +13,11 @@ To solve this, Puhti compute nodes have a fast, temporary local SSD drive called
 
 **The Strategy:**
 1. **Compress:** Zip your dataset into a single file on your local machine.
-2. **Transfer:** Upload only that single zip file to your project directory on CSC.
+2. **Transfer:** Upload that single zip file to your **scratch** directory (`$SCRATCHPATH`) on CSC.
 3. **Unzip on Node:** In your `sbatch` job script, unzip the dataset directly to `$LOCAL_SCRATCH` at the *start* of the job.
 
 This ensures data is read from the ultra-fast local SSD during training.
+
 
 !!! warning "Temporary Storage"
 
@@ -50,19 +51,29 @@ images/
 └── ...
 ```
 
-Now we can zip or tarball the `images` directory and upload the zip/tar file to our project directory on CSC. Steps are below.
+Now we can zip or tarball the `images` directory and upload the zip/tar file to your **scratch** directory (`SCRATCHPATH`) on CSC.
+
+!!! tip "Why Scratch?"
+    It is recommended to use the `$SCRATCHPATH` (e.g., `/scratch/project_123456`) for datasets over the `$PROJECTPATH` because:
+    
+    * **Performance:** It is optimized high throughput (at least for large-ish files).
+    * **Quota:** It has larger quota (1 TiB, 1M files).
+
+    !!! warning "Persistence" 
+    
+        Files in scratch are not kept around forever. Expect them to be deleted after 180 days. For course work, this is usually not an issue.
 
 ### Option A: Zip and Unzip
 
 ```bash title="On your local machine"
 zip -r images.zip images/
-scp images.zip puhti:/$PROJECTPATH/data/
+scp images.zip puhti:$SCRATCHPATH/data/
 ```
 
 Now the files are on CSC Lustre storage. In the slurm script, you can unzip the files to the local scratch and run your training script from there:
 
 ```bash title="slurm_script_should_contain.sh"
-unzip -q $PROJECTPATH/data/images.zip -d $LOCAL_SCRATCH
+unzip -q $SCRATCHPATH/data/images.zip -d $LOCAL_SCRATCH
 srun python your_script.py --data_path $LOCAL_SCRATCH/images
 ```
 
@@ -70,13 +81,13 @@ srun python your_script.py --data_path $LOCAL_SCRATCH/images
 
 ```bash title="On your local machine"
 tar -czf images.tar.gz images/
-scp images.tar.gz puhti:/$PROJECTPATH/data/
+scp images.tar.gz puhti:$SCRATCHPATH/data/
 ```
 
 Now the files are on CSC Lustre storage. In the slurm script, you can untar the files to the local scratch and run your training script from there:
 
 ```bash title="slurm_script_should_contain.sh"
-tar -xf $PROJECTPATH/data/images.tar -C $LOCAL_SCRATCH
+tar -xf $SCRATCHPATH/data/images.tar -C $LOCAL_SCRATCH
 srun python your_script.py --data_path $LOCAL_SCRATCH/images
 ```
 

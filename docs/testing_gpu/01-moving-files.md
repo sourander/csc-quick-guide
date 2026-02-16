@@ -9,6 +9,13 @@ PROJECTPATH=/projappl/project_1234567
 SCRATCHPATH=/scratch/project_1234567
 ```
 
+On puhti, easiest way it to set these variables in your `~/.bashrc` file, like this:
+
+```bash title=".bashrc"
+export PROJECTPATH=/projappl/project_1234567
+export SCRATCHPATH=/scratch/project_1234567
+```
+
 !!! tip
 
     Replace the number in the project name with the actual project number you have access to. The prefix `project_` is important and should not be omitted.
